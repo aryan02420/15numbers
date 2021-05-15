@@ -1,8 +1,8 @@
 class Game {
     constructor(elem, width=4, height=4) {
         this.elem = elem
-        this.width = width
-        this.height = height
+        this.width = parseInt(width)
+        this.height = parseInt(height)
         this.state = []
         let stateSize = width*height
         for (let index = 0; index < stateSize;) {
@@ -16,10 +16,10 @@ class Game {
     printBoard() {
         let str = ''
         this.state.forEach((num, index) => {
-            if (this.indexToPos(index)[0] === 0) str += `\n`
+            if (this.indexToPos(index)[0] === 0) str += `\n\n`
             str += `${num}\t`
         })
-        str.trim()
+        str = str.trim()
         console.log(str)
     }
     validPos(pos) {
@@ -85,7 +85,7 @@ class Game {
             let num = Math.floor(Math.random()*2) + 1
             if (!this.moveDir(dir, num)) --i;
         }
-
+        this.moves = 0
     }
 
     checkSolved() {
@@ -103,13 +103,43 @@ class Game {
         let dir = [Math.sign(dirx), Math.sign(diry)]
         return this.moveDir(dir, num)
     }
+
+    getRows() {
+        let rows = []
+        for (let col = 0; col < this.height; col++) {
+            let startIndex = col * this.width
+            let endIndex = startIndex + this.width
+            rows.push(this.state.slice(startIndex, endIndex))
+        }
+        return rows
+    }
+
+    getBoard() {
+        let rowStr = []
+        let rows = this.getRows()
+        rows.forEach(row => {
+            rowStr.push(row.join('\t'))
+        })
+        return rowStr.join('\n\n')
+    }
+    
+    reset() {
+        this.shuffle()
+        this.startTime = Date.now()
+    }
+
+    elapsedTime() {
+        return (Date.now() - this.startTime)/1000
+    }
 }
 
-let g = new Game('yo', 4, 4)
-g.printBoard()
-g.moveDown()
-g.moveRight()
-g.printBoard()
-console.log('move valid', g.moveIndex(6))
-g.printBoard()
-console.log('solved', g.checkSolved())
+// let g = new Game('yo', 4, 4)
+// g.printBoard()
+// g.moveDown()
+// g.moveRight()
+// g.printBoard()
+// console.log('move valid', g.moveIndex(6))
+// g.printBoard()
+// console.log('solved', g.checkSolved())
+
+module.exports = Game
